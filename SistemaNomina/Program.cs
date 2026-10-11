@@ -1,22 +1,25 @@
 ﻿
-Console.WriteLine("Hello, World!");
-Console.WriteLine("prueba de cambios");
-
 string ValidarCamposVacios( string texto)
 {
    
     Console.WriteLine(texto);
-    string nombre = Console.ReadLine();
-    while (nombre == "")
+    string letra = Console.ReadLine();
+    while (letra == "")
     {
         Console.WriteLine("EL CAMPO NO PUEDE IR VACIO");
         Console.WriteLine(texto);
-        nombre = Console.ReadLine();
+        letra = Console.ReadLine();
     }
     
-    return nombre;
+    return letra;
 }
 
-string valido = ValidarCamposVacios("ingrese su nombre");
+string valido = ValidarCamposVacios("ingrese su nombre: ");
 Console.WriteLine(valido);
-// clonacion exitosa
+
+int ValidarNumero ( string texto)
+{
+    Console.Write(texto);
+    int numero = Convert.ToInt32 (Console.ReadLine());
+    return numero;
+}
