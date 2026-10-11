@@ -74,3 +74,14 @@ string ValidarSiNo (string  texto)
     return validar;
 }
 
+// CLASE CONTENEDORA
+class Cliente
+{
+    string Nombre { get; set; }
+    string Apellido { get; set; }
+    int Edad { get; set; }
+    char sexo {  get; set; }
+    DateTime FechaNacimiento { get; set; }
+    string Licencia { get; set; }
+    int Sueldo { get; set; }
+}
