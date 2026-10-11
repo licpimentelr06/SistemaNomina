@@ -1,6 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-using System.ComponentModel.Design;
-
+﻿
 Console.WriteLine("Hello, World!");
 Console.WriteLine("prueba de cambios");
 
@@ -21,3 +19,4 @@ string ValidarCamposVacios( string texto)
 
 string valido = ValidarCamposVacios("ingrese su nombre");
 Console.WriteLine(valido);
+// clonacion exitosa
