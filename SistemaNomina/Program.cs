@@ -73,6 +73,7 @@ string ValidarSiNo (string  texto)
     }
     return validar;
 }
+Console.WriteLine("cleybi");
 
 // CLASE CONTENEDORA
 class Cliente
@@ -80,7 +81,7 @@ class Cliente
     string Nombre { get; set; }
     string Apellido { get; set; }
     int Edad { get; set; }
-    char sexo {  get; set; }
+    char sexo { get; set; }
     DateTime FechaNacimiento { get; set; }
     string Licencia { get; set; }
     int Sueldo { get; set; }
@@ -88,5 +89,3 @@ class Cliente
 // PARTE DE CLEIBEL - CREAR EL METODO DE MENU DE OPCIONES, E INICIALIZAR LA SETENCIA SHWITC PARA SU USO
 
 // PARTE DE MADDONALL - CREAR LAS PRIMERAS 3 OPCIONES DEL MENU
-Console.Write("hola");
-Console.WriteLine ("cleybi")
