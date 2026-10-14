@@ -73,7 +73,14 @@ string ValidarSiNo (string  texto)
     }
     return validar;
 }
-Console.WriteLine("cleybi");
+// PARTE DE MADDONALL - CREAR LAS PRIMERAS 3 OPCIONES DEL MENU
+Console.Write("sueldo bruto");
+decimal sueldo = Convert.ToDecimal(Console.ReadLine());
+
+    static decimal CalcularTSS(decimal sueldoBruto)
+    {
+        return sueldoBruto * 0.0591m;
+    }
 
 // CLASE CONTENEDORA
 class Cliente
@@ -88,4 +95,4 @@ class Cliente
 }
 // PARTE DE CLEIBEL - CREAR EL METODO DE MENU DE OPCIONES, E INICIALIZAR LA SETENCIA SHWITC PARA SU USO
 
-// PARTE DE MADDONALL - CREAR LAS PRIMERAS 3 OPCIONES DEL MENU
+
