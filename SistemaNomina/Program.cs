@@ -153,6 +153,31 @@ static decimal CalcularISR(decimal sueldoBruto, decimal tss, decimal limExento, 
     return isrMensual;
 }
 
+// CÁLCULO DEL SUELDO NETO
+
+// Llamada al método para calcular el sueldo neto final recibiendo las deducciones
+decimal sueldoNeto = CalcularSueldoNeto(sueldo, totalTss, totalIsr);
+
+// MOSTRAR EL RESULTADO FINAL EN CONSOLA
+Console.WriteLine($"\n==========================================");
+Console.WriteLine($"Sueldo Bruto: RD$ {sueldo:N2}");
+Console.WriteLine($"Descuento TSS: RD$ {totalTss:N2}");
+Console.WriteLine($"Descuento ISR: RD$ {totalIsr:N2}");
+Console.WriteLine($"------------------------------------------");
+Console.WriteLine($"SUELDO NETO A RECIBIR: RD$ {sueldoNeto:N2}");
+Console.WriteLine($"==========================================");
+
+// MÉTODO PARA CALCULAR EL SUELDO NETO CON PARÁMETROS
+static decimal CalcularSueldoNeto(decimal sueldoBruto, decimal descuentoTss, decimal descuentoIsr)
+{
+    // VARIABLE LOCAL PARA EL TOTAL DE DEDUCCIONES
+    decimal totalDeducciones = descuentoTss + descuentoIsr; // Suma de todos los descuentos obligatorios por ley
+    
+    // VARIABLE LOCAL PARA EL RESULTADO FINAL
+    decimal resultadoSueldoNeto = sueldoBruto - totalDeducciones; // Resta de los descuentos al salario base
+    
+    return resultadoSueldoNeto;
+}
 // CLASE CONTENEDORA
 class Cliente
 {
