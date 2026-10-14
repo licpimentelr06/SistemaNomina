@@ -82,6 +82,27 @@ decimal sueldo = Convert.ToDecimal(Console.ReadLine());
         return sueldoBruto * 0.0591m;
     }
 
+    static decimal CalcularISR(decimal sueldoBruto)
+    {
+        decimal tss = CalcularTSS(sueldoBruto);
+        decimal sueldoGravableAnual = (sueldoBruto - tss) * 12;
+        decimal isrAnual = 0;
+
+        if (sueldoAnual > 416220.00m && sueldoAnual <= 624329.00m)
+        {
+            isrAnual = (sueldoAnual - 416220.00m) * 0.15m;
+        }
+        else if (sueldoAnual > 624329.00m && sueldoAnual <= 867123.00m)
+        {
+            isrAnual = 31216.00m + ((sueldoAnual - 624329.00m) * 0.20m);
+        }
+        else if (sueldoAnual > 867123.00m)
+        {
+            isrAnual = 79776.00m + ((sueldoAnual - 867123.00m) * 0.25m);
+        }
+
+        return isrAnual / 12; 
+    }
 // CLASE CONTENEDORA
 class Cliente
 {
