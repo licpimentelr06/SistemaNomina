@@ -73,8 +73,23 @@ string ValidarSiNo (string  texto)
     }
     return validar;
 }
-Console.WriteLine("cleybi");
+// PARTE DE MADDONALL - CREAR LAS PRIMERAS 3 OPCIONES DEL MENU
+// CALCULO TSS
+decimal porcentajeSFS = 0.0304m; // 3.04% Seguro Familiar de Salud (aporte empleado)
+decimal porcentajeAFP = 0.0287m; // 2.87% Fondo de Pensiones (aporte empleado)
+decimal porcentajeTssTotal = porcentajeSFS + porcentajeAFP; // 5.91% Total empleado
 
+Console.Write("Ingrese su sueldo bruto: RD$ ");
+decimal sueldo = Convert.ToDecimal(Console.ReadLine());
+
+decimal totalTss = CalcularTSS(sueldo, porcentajeTssTotal);
+
+static decimal CalcularTSS(decimal sueldoBruto, decimal porcentajeTss)
+{
+    decimal montoDescuentoTss = sueldoBruto * porcentajeTss;
+    
+    return montoDescuentoTss;
+}
 // CLASE CONTENEDORA
 class Cliente
 {
@@ -88,4 +103,4 @@ class Cliente
 }
 // PARTE DE CLEIBEL - CREAR EL METODO DE MENU DE OPCIONES, E INICIALIZAR LA SETENCIA SHWITC PARA SU USO
 
-// PARTE DE MADDONALL - CREAR LAS PRIMERAS 3 OPCIONES DEL MENU
+
