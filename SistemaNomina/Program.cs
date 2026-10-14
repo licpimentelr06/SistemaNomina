@@ -98,4 +98,3 @@ static void MostrarMenu()
     Console.WriteLine("6. Buscar empleados con salario mayor de 50,000");
     Console.WriteLine("0. Salir");
 }
-// PARTE DE MADDONALL - CREAR LAS PRIMERAS 3 OPCIONES DEL MENU
