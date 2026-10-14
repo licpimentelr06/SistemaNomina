@@ -87,5 +87,15 @@ class Cliente
     int Sueldo { get; set; }
 }
 // PARTE DE CLEIBEL - CREAR EL METODO DE MENU DE OPCIONES, E INICIALIZAR LA SETENCIA SHWITC PARA SU USO
-
+static void MostrarMenu()
+{
+    Console.WriteLine("\n===== MENU PRINCIPAL =====");
+    Console.WriteLine("1. Crear clientes");
+    Console.WriteLine("2. Consultar clientes");
+    Console.WriteLine("3. Ver la nomina de empleados");
+    Console.WriteLine("4. Buscar empleados mujeres");
+    Console.WriteLine("5. Buscar empleados con licencia");
+    Console.WriteLine("6. Buscar empleados con salario mayor de 50,000");
+    Console.WriteLine("0. Salir");
+}
 // PARTE DE MADDONALL - CREAR LAS PRIMERAS 3 OPCIONES DEL MENU
