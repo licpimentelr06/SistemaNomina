@@ -74,35 +74,22 @@ string ValidarSiNo (string  texto)
     return validar;
 }
 // PARTE DE MADDONALL - CREAR LAS PRIMERAS 3 OPCIONES DEL MENU
-Console.Write("sueldo bruto");
+// CALCULO TSS
+decimal porcentajeSFS = 0.0304m; // 3.04% Seguro Familiar de Salud (aporte empleado)
+decimal porcentajeAFP = 0.0287m; // 2.87% Fondo de Pensiones (aporte empleado)
+decimal porcentajeTssTotal = porcentajeSFS + porcentajeAFP; // 5.91% Total empleado
+
+Console.Write("Ingrese su sueldo bruto: RD$ ");
 decimal sueldo = Convert.ToDecimal(Console.ReadLine());
 
-    static decimal CalcularTSS(decimal sueldoBruto)
-    {
-        return sueldoBruto * 0.0591m;
-    }
+decimal totalTss = CalcularTSS(sueldo, porcentajeTssTotal);
 
-    static decimal CalcularISR(decimal sueldoBruto)
-    {
-        decimal tss = CalcularTSS(sueldoBruto);
-        decimal sueldoGravableAnual = (sueldoBruto - tss) * 12;
-        decimal isrAnual = 0;
-
-        if (sueldoAnual > 416220.00m && sueldoAnual <= 624329.00m)
-        {
-            isrAnual = (sueldoAnual - 416220.00m) * 0.15m;
-        }
-        else if (sueldoAnual > 624329.00m && sueldoAnual <= 867123.00m)
-        {
-            isrAnual = 31216.00m + ((sueldoAnual - 624329.00m) * 0.20m);
-        }
-        else if (sueldoAnual > 867123.00m)
-        {
-            isrAnual = 79776.00m + ((sueldoAnual - 867123.00m) * 0.25m);
-        }
-
-        return isrAnual / 12; 
-    }
+static decimal CalcularTSS(decimal sueldoBruto, decimal porcentajeTss)
+{
+    decimal montoDescuentoTss = sueldoBruto * porcentajeTss;
+    
+    return montoDescuentoTss;
+}
 // CLASE CONTENEDORA
 class Cliente
 {
