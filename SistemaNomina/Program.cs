@@ -1,5 +1,41 @@
 ﻿
-// VALIDACIONES
+// Variables y constantes
+const decimal porcentajeSFS = 0.0304m; // 3.04% Seguro Familiar de Salud (aporte empleado)
+const decimal porcentajeAFP = 0.0287m; // 2.87% Fondo de Pensiones (aporte empleado)
+const decimal porcentajeTssTotal = porcentajeSFS + porcentajeAFP; // 5.91% Total empleado
+const decimal limiteExentoAnual = 416220.00m; // Escala Anual Exenta: Hasta RD$416,220.00 al año NO paga ISR
+const decimal limiteTramo2Anual = 624329.00m; // Límite superior del 15%: De RD$416,220.01 a RD$624,329.00
+const decimal limiteTramo3Anual = 867123.00m; // Límite superior del 20%: De RD$624,329.01 a RD$867,123.00
+const decimal tasaTramo1 = 0.15m;    // 15% aplicado al excedente del primer tramo
+const decimal baseTramo2 = 31216.00m; // Monto fijo de impuesto acumulado para el segundo tramo
+const decimal tasaTramo2 = 0.20m;    // 20% aplicado al excedente del segundo tramo
+const decimal baseTramo3 = 79776.00m; // Monto fijo de impuesto acumulado para el tercer tramo
+const decimal tasaTramo3 = 0.25m;    // 25% aplicado al excedente del tercer tramo
+const decimal mesesDelAnio = 12m;    // Cantidad de meses en el año para calcular el salario anual y mensual
+
+
+Console.Write("Ingrese su sueldo bruto: RD$ ");
+decimal sueldo = Convert.ToDecimal(Console.ReadLine());
+decimal totalTss = CalcularTSS(sueldo, porcentajeTssTotal);
+decimal totalIsr = CalcularISR
+    (
+    sueldo, 
+    totalTss, 
+    limiteExentoAnual, 
+    limiteTramo2Anual,
+    limiteTramo3Anual, 
+    tasaTramo1, 
+    baseTramo2, 
+    tasaTramo2,
+    baseTramo3, 
+    tasaTramo3, 
+    mesesDelAnio
+    );
+decimal sueldoNeto = CalcularSueldoNeto(sueldo, totalTss, totalIsr);
+
+
+
+// METODOS Y VALIDACIONES
 string ValidarCamposVacios( string texto)
 {
    
@@ -73,49 +109,34 @@ string ValidarSiNo (string  texto)
     }
     return validar;
 }
-// PARTE DE MADDONALL - CREAR LAS PRIMERAS 3 OPCIONES DEL MENU
-// CALCULO TSS
-//
-Console.Write("Ingrese su sueldo bruto: RD$ ");
-decimal sueldo = Convert.ToDecimal(Console.ReadLine());
-//
-decimal porcentajeSFS = 0.0304m; // 3.04% Seguro Familiar de Salud (aporte empleado)
-decimal porcentajeAFP = 0.0287m; // 2.87% Fondo de Pensiones (aporte empleado)
-decimal porcentajeTssTotal = porcentajeSFS + porcentajeAFP; // 5.91% Total empleado
 
-decimal totalTss = CalcularTSS(sueldo, porcentajeTssTotal);
-
- decimal CalcularTSS(decimal sueldoBruto, decimal porcentajeTss)
+decimal CalcularTSS(decimal sueldoBruto, decimal porcentajeTss)
 {
     decimal montoDescuentoTss = sueldoBruto * porcentajeTss;
-    
+
     return montoDescuentoTss;
 }
-// METODO IMPUESTO SOBRE LA RENTA
-decimal limiteExentoAnual = 416220.00m; // Escala Anual Exenta: Hasta RD$416,220.00 al año NO paga ISR
-decimal limiteTramo2Anual = 624329.00m; // Límite superior del 15%: De RD$416,220.01 a RD$624,329.00
-decimal limiteTramo3Anual = 867123.00m; // Límite superior del 20%: De RD$624,329.01 a RD$867,123.00
-decimal tasaTramo1 = 0.15m;    // 15% aplicado al excedente del primer tramo
-decimal baseTramo2 = 31216.00m; // Monto fijo de impuesto acumulado para el segundo tramo
-decimal tasaTramo2 = 0.20m;    // 20% aplicado al excedente del segundo tramo
-decimal baseTramo3 = 79776.00m; // Monto fijo de impuesto acumulado para el tercer tramo
-decimal tasaTramo3 = 0.25m;    // 25% aplicado al excedente del tercer tramo
-decimal mesesDelAnio = 12m;    // Cantidad de meses en el año para calcular el salario anual y mensual
-
-// Llamada al método ISR usando el sueldo bruto y la TSS previamente calculada
-decimal totalIsr = CalcularISR(sueldo, totalTss, limiteExentoAnual, limiteTramo2Anual, limiteTramo3Anual, tasaTramo1, baseTramo2, tasaTramo2, baseTramo3, tasaTramo3, mesesDelAnio);
-
-decimal CalcularISR(decimal sueldoBruto, decimal tss, decimal limExento, decimal limTramo2, decimal limTramo3, decimal tasa1, decimal base2, decimal tasa2, decimal base3, decimal tasa3, decimal meses)
+decimal CalcularISR
+    (
+    decimal sueldoBruto,
+    decimal tss, 
+    decimal limExento,
+    decimal limTramo2, 
+    decimal limTramo3,
+    decimal tasa1, 
+    decimal base2, 
+    decimal tasa2, 
+    decimal base3, 
+    decimal tasa3, 
+    decimal meses
+    )
 {
-    // Restamos la TSS al sueldo bruto para obtener el sueldo imponible o gravable mensual
     decimal sueldoGravableMensual = sueldoBruto - tss;
-    
-    // Multiplicamos por 12 para obtener el sueldo gravable proyectado al año
-    decimal sueldoAnual = sueldoGravableMensual * meses;
-    
-    decimal isrAnual = 0m; // Variable para almacenar el impuesto anual total
 
-    // Evaluación de los tramos según la escala impositiva de la DGII
+    decimal sueldoAnual = sueldoGravableMensual * meses;
+
+    decimal isrAnual = 0m; 
+
     if (sueldoAnual <= limExento)
     {
         isrAnual = 0m; // Exento, no paga impuestos
@@ -136,27 +157,20 @@ decimal CalcularISR(decimal sueldoBruto, decimal tss, decimal limExento, decimal
         isrAnual = base3 + (excedente * tasa3); // Paga RD$79,776.00 + 25% del excedente
     }
 
-    // Dividimos el ISR anual entre 12 meses para obtener la retención mensual exacta
     decimal isrMensual = isrAnual / meses;
-    
+
     return isrMensual;
 }
 
-// CÁLCULO DEL SUELDO NETO
-decimal sueldoNeto = CalcularSueldoNeto(sueldo, totalTss, totalIsr);
-// MÉTODO PARA CALCULAR EL SUELDO NETO CON PARÁMETROS
 decimal CalcularSueldoNeto(decimal sueldoBruto, decimal descuentoTss, decimal descuentoIsr)
 {
-    // VARIABLE LOCAL PARA EL TOTAL DE DEDUCCIONES
-    decimal totalDeducciones = descuentoTss + descuentoIsr; // Suma de todos los descuentos obligatorios por ley
+     decimal totalDeducciones = descuentoTss + descuentoIsr; // Suma de todos los descuentos obligatorios por ley
     
     // VARIABLE LOCAL PARA EL RESULTADO FINAL
     decimal resultadoSueldoNeto = sueldoBruto - totalDeducciones; // Resta de los descuentos al salario base
     
     return resultadoSueldoNeto;
 }
-// PARTE DE CLEIBEL - CREAR EL METODO DE MENU DE OPCIONES
-
 void MostrarMenu()
 {
     Console.WriteLine("\n===== MENU PRINCIPAL =====");
@@ -168,6 +182,33 @@ void MostrarMenu()
     Console.WriteLine("6. Buscar empleados con salario mayor de 50,000");
     Console.WriteLine("0. Salir");
 }
+
+
+// FUJO DEL SISTEMA
+bool salir = false;
+do
+{
+    Console.WriteLine("\n===== EXAMEN FINAL =====");
+    Console.WriteLine("CURSO: INTERNET DE LAS COSAS");
+    Console.WriteLine("MATERIA: PROGRAMACION CON C# ");
+    Console.WriteLine("     INTEGRANTES:            ");
+    Console.WriteLine("  LUIS MIGUEL PIMENTEL       ");
+    Console.WriteLine("  CLEYBY JIMENEZ RAMIREZ     ");
+    Console.WriteLine("  MACDONALD PIERRE PROFETA   ");
+    Console.WriteLine("================================");
+
+    
+
+}
+while (salir);
+{
+    MostrarMenu();
+    Console.Write("OPCION: "); int opcion = Convert.ToInt32(Console.ReadLine());
+
+}
+
+
+
 // CLASE CONTENEDORA
 class Cliente
 {
