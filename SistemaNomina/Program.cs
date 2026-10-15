@@ -13,9 +13,10 @@ const decimal baseTramo3 = 79776.00m; // Monto fijo de impuesto acumulado para e
 const decimal tasaTramo3 = 0.25m;    // 25% aplicado al excedente del tercer tramo
 const decimal mesesDelAnio = 12m;    // Cantidad de meses en el año para calcular el salario anual y mensual
 
+// LISTA CONTENEDORA
+List<Cliente> lista = new List<Cliente>();
 
-Console.Write("Ingrese su sueldo bruto: RD$ ");
-decimal sueldo = Convert.ToDecimal(Console.ReadLine());
+
 decimal totalTss = CalcularTSS(sueldo, porcentajeTssTotal);
 decimal totalIsr = CalcularISR
     (
@@ -60,6 +61,21 @@ int ValidarNumerosEnteros(string texto)
     while (!int.TryParse(entrada, out numero) || numero < 0)
     {
         Console.WriteLine("ERROR: DEBE INGRESAR UN NUMERO ENTERO POSITIVO...");
+        Console.Write(texto);
+        entrada = Console.ReadLine();
+    }
+
+    return numero;
+}
+decimal ValidarNumerosDecimales(string texto)
+{
+    Console.Write(texto);
+    string entrada = Console.ReadLine();
+    decimal numero;
+
+    while (!decimal.TryParse(entrada, out numero) || numero < 0)
+    {
+        Console.WriteLine("ERROR: DEBE INGRESAR UN NUMERO DECIMAL POSITIVO...");
         Console.Write(texto);
         entrada = Console.ReadLine();
     }
@@ -182,11 +198,7 @@ void MostrarMenu()
     Console.WriteLine("6. Buscar empleados con salario mayor de 50,000");
     Console.WriteLine("0. Salir");
 }
-
-
-// FUJO DEL SISTEMA
-bool salir = false;
-do
+void Presentacion ()
 {
     Console.WriteLine("\n===== EXAMEN FINAL =====");
     Console.WriteLine("CURSO: INTERNET DE LAS COSAS");
@@ -197,26 +209,45 @@ do
     Console.WriteLine("  MACDONALD PIERRE PROFETA   ");
     Console.WriteLine("================================");
 
-    
-
 }
-while (salir);
+
+// FUJO DEL SISTEMA
+bool salir = false;
+Presentacion();
+do
 {
     MostrarMenu();
     Console.Write("OPCION: "); int opcion = Convert.ToInt32(Console.ReadLine());
+    switch (opcion)
+    {
+        case 0: Console.WriteLine("SALIENDO DEL SISTEMA...."); salir = true; break;
+        case 1:
+            string nombre = ValidarCamposVacios("NOMBRE: ");
+            string apellido = ValidarCamposVacios("APELLIDO: ");
+            int edad = ValidarNumerosEnteros("EDAD: ");
+            char sexo = ValidarChar("SEXO: ");
+            DateTime nacimiento = ValidarFechaNacimiento("FECHA DE NACIMIENTO (FORMATO:DD/MM/AA):  ");
+            string licencia = ValidarSiNo("POSEES LICENCIA: ");
+            decimal sueldo = ValidarNumerosDecimales("INGRESE SU SUELDO (FORMATO: 00.00): ");
+
+
+            break;
+    }
 
 }
+while (!salir);
+
 
 
 
 // CLASE CONTENEDORA
 class Cliente
 {
-    string Nombre { get; set; }
-    string Apellido { get; set; }
-    int Edad { get; set; }
-    char sexo { get; set; }
-    DateTime FechaNacimiento { get; set; }
-    string Licencia { get; set; }
-    int Sueldo { get; set; }
+   public string Nombre { get; set; }
+   public string Apellido { get; set; }
+   public int Edad { get; set; }
+   public char sexo { get; set; }
+   public DateTime FechaNacimiento { get; set; }
+   public  string Licencia { get; set; }
+   public decimal Sueldo { get; set; }
 }
