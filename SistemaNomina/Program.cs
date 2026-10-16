@@ -1,5 +1,6 @@
-﻿
-// Variables y constantes
+﻿// Variables y constantes
+using System.Globalization;
+
 const decimal porcentajeSFS = 0.0304m; // 3.04% Seguro Familiar de Salud (aporte empleado)
 const decimal porcentajeAFP = 0.0287m; // 2.87% Fondo de Pensiones (aporte empleado)
 const decimal porcentajeTssTotal = porcentajeSFS + porcentajeAFP; // 5.91% Total empleado
@@ -14,26 +15,7 @@ const decimal tasaTramo3 = 0.25m;    // 25% aplicado al excedente del tercer tra
 const decimal mesesDelAnio = 12m;    // Cantidad de meses en el año para calcular el salario anual y mensual
 
 // LISTA CONTENEDORA
-List<Cliente> lista = new List<Cliente>();
-
-
-decimal totalTss = CalcularTSS(sueldo, porcentajeTssTotal);
-decimal totalIsr = CalcularISR
-    (
-    sueldo, 
-    totalTss, 
-    limiteExentoAnual, 
-    limiteTramo2Anual,
-    limiteTramo3Anual, 
-    tasaTramo1, 
-    baseTramo2, 
-    tasaTramo2,
-    baseTramo3, 
-    tasaTramo3, 
-    mesesDelAnio
-    );
-decimal sueldoNeto = CalcularSueldoNeto(sueldo, totalTss, totalIsr);
-
+List<Cliente> CrearEmpleado = new List<Cliente>();
 
 
 // METODOS Y VALIDACIONES
@@ -222,15 +204,67 @@ do
     {
         case 0: Console.WriteLine("SALIENDO DEL SISTEMA...."); salir = true; break;
         case 1:
-            string nombre = ValidarCamposVacios("NOMBRE: ");
-            string apellido = ValidarCamposVacios("APELLIDO: ");
+            
+            string nombre = ValidarCamposVacios("NOMBRE: ").ToUpper();
+            string apellido = ValidarCamposVacios("APELLIDO: ").ToUpper();
             int edad = ValidarNumerosEnteros("EDAD: ");
             char sexo = ValidarChar("SEXO: ");
             DateTime nacimiento = ValidarFechaNacimiento("FECHA DE NACIMIENTO (FORMATO:DD/MM/AA):  ");
             string licencia = ValidarSiNo("POSEES LICENCIA: ");
             decimal sueldo = ValidarNumerosDecimales("INGRESE SU SUELDO (FORMATO: 00.00): ");
 
+            CrearEmpleado.Add(new Cliente
+            {
+                Nombre = nombre,
+                Apellido = apellido,
+                Edad = edad,
+                sexo = sexo,
+                FechaNacimiento = nacimiento,
+                Licencia = licencia,
+                Sueldo = sueldo,
+            });
+            Console.WriteLine("EMPLEADO CREADO CORRECTAMENTE....");
+            break;
+        case 2:
+            Console.Write("ESCRIBA EL NOMBRE DEL EMPLEADO A CONSULTAR: "); String consultaEmpleado = Console.ReadLine();
+            Cliente EncontrarCliente = CrearEmpleado.FirstOrDefault(b => $"{b.Nombre} {b.Apellido}".Equals(consultaEmpleado,StringComparison.OrdinalIgnoreCase));
+            if (EncontrarCliente != null)
+            {
+                Console.WriteLine("\n¡Cliente Encontrado! Aquí están sus datos:");
+                Console.WriteLine("-----------------------------------------");
+                Console.WriteLine($"Nombre Completo: {EncontrarCliente.Nombre} {EncontrarCliente.Apellido}");
+                Console.WriteLine($"Edad:            {EncontrarCliente.Edad} años");
+                Console.WriteLine($"Nacimiento:      {EncontrarCliente.FechaNacimiento}");
+                Console.WriteLine($"Licencia:        {EncontrarCliente.Licencia} ");
+                Console.WriteLine($"Sueldo Bruto:   ${EncontrarCliente.Sueldo}");
+                Console.WriteLine("-----------------------------------------");
+                Console.WriteLine("             DEDUCCIONES:                ");
 
+                decimal sueldoEmpleado = EncontrarCliente.Sueldo;
+                decimal totalTss = CalcularTSS(sueldoEmpleado, porcentajeTssTotal);
+                decimal totalIsr = CalcularISR(
+                    sueldoEmpleado,
+                    totalTss,
+                    limiteExentoAnual,
+                    limiteTramo2Anual,
+                    limiteTramo3Anual,
+                    tasaTramo1,
+                    baseTramo2,
+                    tasaTramo2,
+                    baseTramo3,
+                    tasaTramo3,
+                    mesesDelAnio
+                );
+                decimal sueldoNeto = CalcularSueldoNeto(sueldoEmpleado, totalTss, totalIsr);
+
+                Console.WriteLine($"TSS:                     ${totalTss:F2}");
+                Console.WriteLine($"Impuesto sobre la renta: ${totalIsr:F2}");
+                Console.WriteLine($"Sueldo Neto:             ${sueldoNeto:F2}");
+            }
+            else
+            {
+                Console.WriteLine($"\n[!] Error: El cliente '{consultaEmpleado}' no está registrado.");
+            }
             break;
     }
 
