@@ -162,23 +162,22 @@ decimal CalcularISR
 
 decimal CalcularSueldoNeto(decimal sueldoBruto, decimal descuentoTss, decimal descuentoIsr)
 {
-     decimal totalDeducciones = descuentoTss + descuentoIsr; // Suma de todos los descuentos obligatorios por ley
-    
-    // VARIABLE LOCAL PARA EL RESULTADO FINAL
-    decimal resultadoSueldoNeto = sueldoBruto - totalDeducciones; // Resta de los descuentos al salario base
+     decimal totalDeducciones = descuentoTss + descuentoIsr; 
+    decimal resultadoSueldoNeto = sueldoBruto - totalDeducciones; 
     
     return resultadoSueldoNeto;
 }
 void MostrarMenu()
 {
-    Console.WriteLine("\n===== MENU PRINCIPAL =====");
-    Console.WriteLine("1. Crear clientes");
-    Console.WriteLine("2. Consultar clientes");
-    Console.WriteLine("3. Ver la nomina de empleados");
-    Console.WriteLine("4. Buscar empleados mujeres");
-    Console.WriteLine("5. Buscar empleados con licencia");
-    Console.WriteLine("6. Buscar empleados con salario mayor de 50,000");
-    Console.WriteLine("0. Salir");
+    Console.WriteLine("\n==================== MENU PRINCIPAL ==========================");
+    Console.WriteLine("                     1. Crear clientes");
+    Console.WriteLine("                     2. Consultar clientes");
+    Console.WriteLine("                     3. Ver la nomina de empleados");
+    Console.WriteLine("                     4. Buscar empleados mujeres");
+    Console.WriteLine("                     5. Buscar empleados con licencia");
+    Console.WriteLine("                     6. Buscar empleados con salario mayor de 50,000");
+    Console.WriteLine("                     0. Salir");
+    Console.WriteLine("===============================================================");
 }
 void Presentacion ()
 {
@@ -236,7 +235,7 @@ do
                 Console.WriteLine($"Edad:            {EncontrarCliente.Edad} años");
                 Console.WriteLine($"Nacimiento:      {EncontrarCliente.FechaNacimiento}");
                 Console.WriteLine($"Licencia:        {EncontrarCliente.Licencia} ");
-                Console.WriteLine($"Sueldo Bruto:   ${EncontrarCliente.Sueldo}");
+                Console.WriteLine($"Sueldo Bruto:   ${EncontrarCliente.Sueldo:N2}");
                 Console.WriteLine("-----------------------------------------");
                 Console.WriteLine("             DEDUCCIONES:                ");
 
@@ -257,13 +256,24 @@ do
                 );
                 decimal sueldoNeto = CalcularSueldoNeto(sueldoEmpleado, totalTss, totalIsr);
 
-                Console.WriteLine($"TSS:                     ${totalTss:F2}");
-                Console.WriteLine($"Impuesto sobre la renta: ${totalIsr:F2}");
-                Console.WriteLine($"Sueldo Neto:             ${sueldoNeto:F2}");
+                Console.WriteLine($"TSS:                     ${totalTss:N2}");
+                Console.WriteLine($"Impuesto sobre la renta: ${totalIsr:N2}");
+                Console.WriteLine($"Sueldo Neto:             ${sueldoNeto:N2}");
             }
             else
             {
                 Console.WriteLine($"\n[!] Error: El cliente '{consultaEmpleado}' no está registrado.");
+            }
+            break;
+        case 3:
+            Console.WriteLine("================================");
+            Console.WriteLine("     NOMINA DE EMPLEADOS:       ");
+            Console.WriteLine("================================");
+
+            foreach (Cliente c in CrearEmpleado)
+            {
+                Console.WriteLine($"NOMBRE: {c.Nombre} {c.Apellido} => SUELDO: ${c.Sueldo:N2}");
+
             }
             break;
     }
