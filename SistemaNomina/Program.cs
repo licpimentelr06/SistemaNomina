@@ -198,7 +198,7 @@ Presentacion();
 do
 {
     MostrarMenu();
-    Console.Write("OPCION: "); int opcion = Convert.ToInt32(Console.ReadLine());
+    int opcion = ValidarNumerosEnteros("OPCION: ");
     switch (opcion)
     {
         case 0: Console.WriteLine("SALIENDO DEL SISTEMA...."); salir = true; break;
@@ -272,8 +272,21 @@ do
 
             foreach (Cliente c in CrearEmpleado)
             {
-                Console.WriteLine($"NOMBRE: {c.Nombre} {c.Apellido} => SUELDO: ${c.Sueldo:N2}");
-
+                int i = 1;
+                Console.WriteLine($"{i} - NOMBRE: {c.Nombre} {c.Apellido} => SUELDO: ${c.Sueldo:N2}");
+                i++;
+            }
+            break;
+        case 4:
+            Console.WriteLine("LISTADO DE EMPLEADAS FEMENINAS:");
+            foreach(Cliente f in CrearEmpleado)
+            {
+                if (f.sexo == 'F')
+                {
+                    int n = 1;
+                    Console.WriteLine($"{n} - {f.Nombre} {f.Apellido}");
+                    n++;
+                }
             }
             break;
     }
