@@ -1,5 +1,63 @@
 ﻿
-// VALIDACIONES
+using System.Globalization;
+using System.IO;         
+using System.Text.Json;  
+
+const decimal porcentajeSFS = 0.0304m; // 3.04% Seguro Familiar de Salud (aporte empleado)
+const decimal porcentajeAFP = 0.0287m; // 2.87% Fondo de Pensiones (aporte empleado)
+const decimal porcentajeTssTotal = porcentajeSFS + porcentajeAFP; // 5.91% Total empleado
+const decimal limiteExentoAnual = 416220.00m; // Escala Anual Exenta: Hasta RD$416,220.00 al año NO paga ISR
+const decimal limiteTramo2Anual = 624329.00m; // Límite superior del 15%: De RD$416,220.01 a RD$624,329.00
+const decimal limiteTramo3Anual = 867123.00m; // Límite superior del 20%: De RD$624,329.01 a RD$867,123.00
+const decimal tasaTramo1 = 0.15m;    // 15% aplicado al excedente del primer tramo
+const decimal baseTramo2 = 31216.00m; // Monto fijo de impuesto acumulado para el segundo tramo
+const decimal tasaTramo2 = 0.20m;    // 20% aplicado al excedente del segundo tramo
+const decimal baseTramo3 = 79776.00m; // Monto fijo de impuesto acumulado para el tercer tramo
+const decimal tasaTramo3 = 0.25m;    // 25% aplicado al excedente del tercer tramo
+const decimal mesesDelAnio = 12m;    // Cantidad de meses en el año para calcular el salario anual y mensual
+
+// PLUSSSSSS
+// GUARDAR LOS DATOS EN UN TXT PARA NO PERDER LA INFORMACION
+
+const String rutaArchvivo = "DATA.Json";
+void GuardarDatos (List<Cliente>DatosEmpleados)
+{
+    try
+    {
+      var opcion = new JsonSerializerOptions {WriteIndented = true };
+        string json = JsonSerializer.Serialize(DatosEmpleados, opcion);
+        File.WriteAllText(rutaArchvivo, json);
+
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[!] Error al guardar datos: {ex.Message}");
+    }
+    
+}
+List<Cliente> CargarDatos()
+{
+    if (!File.Exists(rutaArchvivo))
+    {
+        return new List<Cliente>();
+    }
+
+    try
+    {
+        string json = File.ReadAllText(rutaArchvivo);
+        return JsonSerializer.Deserialize<List<Cliente>>(json) ?? new List<Cliente>();
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[!] Error al cargar datos: {ex.Message}");
+        return new List<Cliente>();
+    }
+}
+// LISTA CONTENEDORA (Carga automáticamente los datos existentes)
+List<Cliente> CrearEmpleado = CargarDatos();
+
+
+// METODOS Y VALIDACIONES
 string ValidarCamposVacios( string texto)
 {
    
@@ -24,6 +82,21 @@ int ValidarNumerosEnteros(string texto)
     while (!int.TryParse(entrada, out numero) || numero < 0)
     {
         Console.WriteLine("ERROR: DEBE INGRESAR UN NUMERO ENTERO POSITIVO...");
+        Console.Write(texto);
+        entrada = Console.ReadLine();
+    }
+
+    return numero;
+}
+decimal ValidarNumerosDecimales(string texto)
+{
+    Console.Write(texto);
+    string entrada = Console.ReadLine();
+    decimal numero;
+
+    while (!decimal.TryParse(entrada, out numero) || numero < 0)
+    {
+        Console.WriteLine("ERROR: DEBE INGRESAR UN NUMERO DECIMAL POSITIVO...");
         Console.Write(texto);
         entrada = Console.ReadLine();
     }
@@ -73,49 +146,34 @@ string ValidarSiNo (string  texto)
     }
     return validar;
 }
-// PARTE DE MADDONALL - CREAR LAS PRIMERAS 3 OPCIONES DEL MENU
-// CALCULO TSS
-//
-Console.Write("Ingrese su sueldo bruto: RD$ ");
-decimal sueldo = Convert.ToDecimal(Console.ReadLine());
-//
-decimal porcentajeSFS = 0.0304m; // 3.04% Seguro Familiar de Salud (aporte empleado)
-decimal porcentajeAFP = 0.0287m; // 2.87% Fondo de Pensiones (aporte empleado)
-decimal porcentajeTssTotal = porcentajeSFS + porcentajeAFP; // 5.91% Total empleado
 
-decimal totalTss = CalcularTSS(sueldo, porcentajeTssTotal);
-
- decimal CalcularTSS(decimal sueldoBruto, decimal porcentajeTss)
+decimal CalcularTSS(decimal sueldoBruto, decimal porcentajeTss)
 {
     decimal montoDescuentoTss = sueldoBruto * porcentajeTss;
-    
+
     return montoDescuentoTss;
 }
-// METODO IMPUESTO SOBRE LA RENTA
-decimal limiteExentoAnual = 416220.00m; // Escala Anual Exenta: Hasta RD$416,220.00 al año NO paga ISR
-decimal limiteTramo2Anual = 624329.00m; // Límite superior del 15%: De RD$416,220.01 a RD$624,329.00
-decimal limiteTramo3Anual = 867123.00m; // Límite superior del 20%: De RD$624,329.01 a RD$867,123.00
-decimal tasaTramo1 = 0.15m;    // 15% aplicado al excedente del primer tramo
-decimal baseTramo2 = 31216.00m; // Monto fijo de impuesto acumulado para el segundo tramo
-decimal tasaTramo2 = 0.20m;    // 20% aplicado al excedente del segundo tramo
-decimal baseTramo3 = 79776.00m; // Monto fijo de impuesto acumulado para el tercer tramo
-decimal tasaTramo3 = 0.25m;    // 25% aplicado al excedente del tercer tramo
-decimal mesesDelAnio = 12m;    // Cantidad de meses en el año para calcular el salario anual y mensual
-
-// Llamada al método ISR usando el sueldo bruto y la TSS previamente calculada
-decimal totalIsr = CalcularISR(sueldo, totalTss, limiteExentoAnual, limiteTramo2Anual, limiteTramo3Anual, tasaTramo1, baseTramo2, tasaTramo2, baseTramo3, tasaTramo3, mesesDelAnio);
-
-decimal CalcularISR(decimal sueldoBruto, decimal tss, decimal limExento, decimal limTramo2, decimal limTramo3, decimal tasa1, decimal base2, decimal tasa2, decimal base3, decimal tasa3, decimal meses)
+decimal CalcularISR
+    (
+    decimal sueldoBruto,
+    decimal tss, 
+    decimal limExento,
+    decimal limTramo2, 
+    decimal limTramo3,
+    decimal tasa1, 
+    decimal base2, 
+    decimal tasa2, 
+    decimal base3, 
+    decimal tasa3, 
+    decimal meses
+    )
 {
-    // Restamos la TSS al sueldo bruto para obtener el sueldo imponible o gravable mensual
     decimal sueldoGravableMensual = sueldoBruto - tss;
-    
-    // Multiplicamos por 12 para obtener el sueldo gravable proyectado al año
-    decimal sueldoAnual = sueldoGravableMensual * meses;
-    
-    decimal isrAnual = 0m; // Variable para almacenar el impuesto anual total
 
-    // Evaluación de los tramos según la escala impositiva de la DGII
+    decimal sueldoAnual = sueldoGravableMensual * meses;
+
+    decimal isrAnual = 0m; 
+
     if (sueldoAnual <= limExento)
     {
         isrAnual = 0m; // Exento, no paga impuestos
@@ -136,46 +194,182 @@ decimal CalcularISR(decimal sueldoBruto, decimal tss, decimal limExento, decimal
         isrAnual = base3 + (excedente * tasa3); // Paga RD$79,776.00 + 25% del excedente
     }
 
-    // Dividimos el ISR anual entre 12 meses para obtener la retención mensual exacta
     decimal isrMensual = isrAnual / meses;
-    
+
     return isrMensual;
 }
 
-// CÁLCULO DEL SUELDO NETO
-decimal sueldoNeto = CalcularSueldoNeto(sueldo, totalTss, totalIsr);
-// MÉTODO PARA CALCULAR EL SUELDO NETO CON PARÁMETROS
 decimal CalcularSueldoNeto(decimal sueldoBruto, decimal descuentoTss, decimal descuentoIsr)
 {
-    // VARIABLE LOCAL PARA EL TOTAL DE DEDUCCIONES
-    decimal totalDeducciones = descuentoTss + descuentoIsr; // Suma de todos los descuentos obligatorios por ley
-    
-    // VARIABLE LOCAL PARA EL RESULTADO FINAL
-    decimal resultadoSueldoNeto = sueldoBruto - totalDeducciones; // Resta de los descuentos al salario base
+     decimal totalDeducciones = descuentoTss + descuentoIsr; 
+    decimal resultadoSueldoNeto = sueldoBruto - totalDeducciones; 
     
     return resultadoSueldoNeto;
 }
-// PARTE DE CLEIBEL - CREAR EL METODO DE MENU DE OPCIONES
-
 void MostrarMenu()
 {
-    Console.WriteLine("\n===== MENU PRINCIPAL =====");
-    Console.WriteLine("1. Crear clientes");
-    Console.WriteLine("2. Consultar clientes");
-    Console.WriteLine("3. Ver la nomina de empleados");
-    Console.WriteLine("4. Buscar empleados mujeres");
-    Console.WriteLine("5. Buscar empleados con licencia");
-    Console.WriteLine("6. Buscar empleados con salario mayor de 50,000");
-    Console.WriteLine("0. Salir");
+    Console.WriteLine("\n==================== MENU PRINCIPAL ==========================");
+    Console.WriteLine("                     1. Crear clientes");
+    Console.WriteLine("                     2. Consultar clientes");
+    Console.WriteLine("                     3. Ver la nomina de empleados");
+    Console.WriteLine("                     4. Buscar empleados mujeres");
+    Console.WriteLine("                     5. Buscar empleados con licencia");
+    Console.WriteLine("                     6. Buscar empleados con salario mayor de 50,000");
+    Console.WriteLine("                     0. Salir");
+    Console.WriteLine("===============================================================");
 }
+void Presentacion ()
+{
+    Console.WriteLine("\n===== EXAMEN FINAL =====");
+    Console.WriteLine("CURSO: INTERNET DE LAS COSAS");
+    Console.WriteLine("MATERIA: PROGRAMACION CON C# ");
+    Console.WriteLine("     INTEGRANTES:            ");
+    Console.WriteLine("  LUIS MIGUEL PIMENTEL       ");
+    Console.WriteLine("  CLEYBY JIMENEZ RAMIREZ     ");
+    Console.WriteLine("  MACDONALD PIERRE PROFETA   ");
+    Console.WriteLine("================================");
+
+}
+
+// FUJO DEL SISTEMA
+bool salir = false;
+Presentacion();
+do
+{
+    MostrarMenu();
+    int opcion = ValidarNumerosEnteros("OPCION: ");
+    switch (opcion)
+    {
+        case 0: Console.WriteLine("SALIENDO DEL SISTEMA...."); salir = true; break;
+        case 1:
+            
+            string nombre = ValidarCamposVacios("NOMBRE: ").ToUpper();
+            string apellido = ValidarCamposVacios("APELLIDO: ").ToUpper();
+            int edad = ValidarNumerosEnteros("EDAD: ");
+            char sexo = ValidarChar("SEXO: ");
+            DateTime nacimiento = ValidarFechaNacimiento("FECHA DE NACIMIENTO (FORMATO:DD/MM/AA):  ");
+            string licencia = ValidarSiNo("POSEES LICENCIA: ");
+            decimal sueldo = ValidarNumerosDecimales("INGRESE SU SUELDO (FORMATO: 00.00): ");
+
+            CrearEmpleado.Add(new Cliente
+            {
+                Nombre = nombre,
+                Apellido = apellido,
+                Edad = edad,
+                sexo = sexo,
+                FechaNacimiento = nacimiento,
+                Licencia = licencia,
+                Sueldo = sueldo,
+            });
+            GuardarDatos(CrearEmpleado);
+            Console.WriteLine("EMPLEADO CREADO CORRECTAMENTE....");
+            break;
+        case 2:
+            Console.Write("ESCRIBA EL NOMBRE DEL EMPLEADO A CONSULTAR: "); String consultaEmpleado = Console.ReadLine();
+            Cliente EncontrarCliente = CrearEmpleado.FirstOrDefault(b => $"{b.Nombre} {b.Apellido}".Equals(consultaEmpleado,StringComparison.OrdinalIgnoreCase));
+            if (EncontrarCliente != null)
+            {
+                Console.WriteLine("\n¡Cliente Encontrado! Aquí están sus datos:");
+                Console.WriteLine("-----------------------------------------");
+                Console.WriteLine($"Nombre Completo: {EncontrarCliente.Nombre} {EncontrarCliente.Apellido}");
+                Console.WriteLine($"Edad:            {EncontrarCliente.Edad} años");
+                Console.WriteLine($"Nacimiento:      {EncontrarCliente.FechaNacimiento}");
+                Console.WriteLine($"Licencia:        {EncontrarCliente.Licencia} ");
+                Console.WriteLine($"Sueldo Bruto:   ${EncontrarCliente.Sueldo:N2}");
+                Console.WriteLine("-----------------------------------------");
+                Console.WriteLine("             DEDUCCIONES:                ");
+
+                decimal sueldoEmpleado = EncontrarCliente.Sueldo;
+                decimal totalTss = CalcularTSS(sueldoEmpleado, porcentajeTssTotal);
+                decimal totalIsr = CalcularISR(
+                    sueldoEmpleado,
+                    totalTss,
+                    limiteExentoAnual,
+                    limiteTramo2Anual,
+                    limiteTramo3Anual,
+                    tasaTramo1,
+                    baseTramo2,
+                    tasaTramo2,
+                    baseTramo3,
+                    tasaTramo3,
+                    mesesDelAnio
+                );
+                decimal sueldoNeto = CalcularSueldoNeto(sueldoEmpleado, totalTss, totalIsr);
+
+                Console.WriteLine($"TSS:                     ${totalTss:N2}");
+                Console.WriteLine($"Impuesto sobre la renta: ${totalIsr:N2}");
+                Console.WriteLine($"Sueldo Neto:             ${sueldoNeto:N2}");
+            }
+            else
+            {
+                Console.WriteLine($"\n[!] Error: El cliente '{consultaEmpleado}' no está registrado.");
+            }
+            break;
+        case 3:
+            Console.WriteLine("================================");
+            Console.WriteLine("     NOMINA DE EMPLEADOS:       ");
+            Console.WriteLine("================================");
+
+            foreach (Cliente c in CrearEmpleado)
+            {
+                int i = 1;
+                Console.WriteLine($"{i} - NOMBRE: {c.Nombre} {c.Apellido} => SUELDO: ${c.Sueldo:N2}");
+                i++;
+            }
+            break;
+        case 4:
+            Console.WriteLine("LISTADO DE EMPLEADAS FEMENINAS:");
+            foreach(Cliente f in CrearEmpleado)
+            {
+                if (f.sexo == 'F')
+                {
+                    int n = 1;
+                    Console.WriteLine($"{n} - {f.Nombre} {f.Apellido}");
+                    n++;
+                }
+            }
+            break;
+        case 5:
+            Console.WriteLine(" EMPLEADOS QUE POSEEN LICENCIA: :");
+            foreach (Cliente e in CrearEmpleado)
+            {
+                if (e.Licencia == "SI")
+                {
+                    int n = 1;
+                    Console.WriteLine($"{n} - {e.Nombre} {e.Apellido}");
+                    n++;
+                }
+            }
+            break;
+        case 6:
+            Console.WriteLine("EMPLEADOS CON SUELDO MAYOR A 50,000.00:");
+            foreach (Cliente s in CrearEmpleado)
+            {
+                decimal tope = 50000m;
+                if (s.Sueldo >= tope)
+                {
+                    int n = 1;
+                    Console.WriteLine($"{n} - {s.Nombre} {s.Apellido} => {s.Sueldo:N2}");
+                    n++;
+                }
+            }
+            break;
+    }
+
+}
+while (!salir);
+
+
+
+
 // CLASE CONTENEDORA
 class Cliente
 {
-    string Nombre { get; set; }
-    string Apellido { get; set; }
-    int Edad { get; set; }
-    char sexo { get; set; }
-    DateTime FechaNacimiento { get; set; }
-    string Licencia { get; set; }
-    int Sueldo { get; set; }
+   public string Nombre { get; set; }
+   public string Apellido { get; set; }
+   public int Edad { get; set; }
+   public char sexo { get; set; }
+   public DateTime FechaNacimiento { get; set; }
+   public  string Licencia { get; set; }
+   public decimal Sueldo { get; set; }
 }
