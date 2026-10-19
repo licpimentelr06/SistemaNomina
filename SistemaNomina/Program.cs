@@ -1,5 +1,7 @@
-﻿// Variables y constantes
+﻿
 using System.Globalization;
+using System.IO;         
+using System.Text.Json;  
 
 const decimal porcentajeSFS = 0.0304m; // 3.04% Seguro Familiar de Salud (aporte empleado)
 const decimal porcentajeAFP = 0.0287m; // 2.87% Fondo de Pensiones (aporte empleado)
@@ -14,8 +16,45 @@ const decimal baseTramo3 = 79776.00m; // Monto fijo de impuesto acumulado para e
 const decimal tasaTramo3 = 0.25m;    // 25% aplicado al excedente del tercer tramo
 const decimal mesesDelAnio = 12m;    // Cantidad de meses en el año para calcular el salario anual y mensual
 
-// LISTA CONTENEDORA
-List<Cliente> CrearEmpleado = new List<Cliente>();
+// PLUSSSSSS
+// GUARDAR LOS DATOS EN UN TXT PARA NO PERDER LA INFORMACION
+
+const String rutaArchvivo = "DATA.Json";
+void GuardarDatos (List<Cliente>DatosEmpleados)
+{
+    try
+    {
+      var opcion = new JsonSerializerOptions {WriteIndented = true };
+        string json = JsonSerializer.Serialize(DatosEmpleados, opcion);
+        File.WriteAllText(rutaArchvivo, json);
+
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[!] Error al guardar datos: {ex.Message}");
+    }
+    
+}
+List<Cliente> CargarDatos()
+{
+    if (!File.Exists(rutaArchvivo))
+    {
+        return new List<Cliente>();
+    }
+
+    try
+    {
+        string json = File.ReadAllText(rutaArchvivo);
+        return JsonSerializer.Deserialize<List<Cliente>>(json) ?? new List<Cliente>();
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[!] Error al cargar datos: {ex.Message}");
+        return new List<Cliente>();
+    }
+}
+// LISTA CONTENEDORA (Carga automáticamente los datos existentes)
+List<Cliente> CrearEmpleado = CargarDatos();
 
 
 // METODOS Y VALIDACIONES
@@ -222,6 +261,7 @@ do
                 Licencia = licencia,
                 Sueldo = sueldo,
             });
+            GuardarDatos(CrearEmpleado);
             Console.WriteLine("EMPLEADO CREADO CORRECTAMENTE....");
             break;
         case 2:
