@@ -289,6 +289,31 @@ do
                 }
             }
             break;
+        case 5:
+            Console.WriteLine(" EMPLEADOS QUE POSEEN LICENCIA: :");
+            foreach (Cliente e in CrearEmpleado)
+            {
+                if (e.Licencia == "SI")
+                {
+                    int n = 1;
+                    Console.WriteLine($"{n} - {e.Nombre} {e.Apellido}");
+                    n++;
+                }
+            }
+            break;
+        case 6:
+            Console.WriteLine("EMPLEADOS CON SUELDO MAYOR A 50,000.00:");
+            foreach (Cliente s in CrearEmpleado)
+            {
+                decimal tope = 50000m;
+                if (s.Sueldo >= tope)
+                {
+                    int n = 1;
+                    Console.WriteLine($"{n} - {s.Nombre} {s.Apellido} => {s.Sueldo:N2}");
+                    n++;
+                }
+            }
+            break;
     }
 
 }
